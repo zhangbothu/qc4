@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>QC3 · 地图 Sug 纠错调试台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+    <div class="brand">
+        <span class="logo">QC3</span>
+        <div>
+            <h1>地图 Sug 纠错调试台</h1>
+            <p class="sub">边输入边纠错 · 只修拼写不补全 · 上下文感知</p>
+        </div>
+    </div>
+    <div class="meta" id="meta">正在加载模型信息…</div>
+</header>
+
+<main class="layout">
+    <section class="card input-card">
+        <div class="row">
+            <div class="field">
+                <label>国家</label>
+                <div class="segmented" id="countries"></div>
+            </div>
+            <div class="field">
+                <label for="city">城市（地理先验）</label>
+                <select id="city"></select>
+            </div>
+        </div>
+        <div class="field">
+            <label for="q">用户输入（末尾不带空格 = 最后一个词还在输入，按前缀纠错）</label>
+            <div class="query-box">
+                <input id="q" type="text" autocomplete="off" spellcheck="false"
+                       placeholder="例如 Ecatepec de Moaalos、The Toeer of London、starbucs coefe">
+                <button id="space" class="ghost" title="在末尾追加空格，表示最后一个词已输入完">␣ 词结束</button>
+                <button id="clear" class="ghost" title="清空">清空</button>
+            </div>
+        </div>
+        <div class="examples">
+            <span class="examples-label">示例：</span>
+            <div id="examples" class="chips"></div>
+        </div>
+    </section>
+
+    <section class="card result-card" id="result">
+        <div class="empty" id="empty">
+            <div class="empty-icon">⌨️</div>
+            <p>输入一个地点、地址或品牌，结果会随输入实时刷新。</p>
+        </div>
+        <div id="result-body" hidden>
+            <div class="result-head">
+                <div class="pair">
+                    <div class="label">原始输入</div>
+                    <div class="text original" id="original"></div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="pair">
+                    <div class="label">纠错结果（送入 Sug 召回）</div>
+                    <div class="text corrected" id="corrected"></div>
+                </div>
+            </div>
+            <div class="badges" id="badges"></div>
+            <ul class="corrections" id="corrections"></ul>
+        </div>
+        <div class="error" id="error" hidden></div>
+    </section>
+
+    <section class="card lattice-card" id="lattice-card" hidden>
+        <div class="card-title">
+            <h2>候选格（Lattice）</h2>
+            <p>每个 token 的召回候选、来源与打分。<b>max-marginal</b> = 经过该候选的最优整句路径得分（含上下文），整句最优路径即为输出。</p>
+        </div>
+        <div id="lattice" class="lattice"></div>
+    </section>
+</main>
+
+<footer class="foot">
+    <span>API：<code>GET /api/v1/correct?q=&amp;country=&amp;city=&amp;debug=true</code></span>
+    <span>·</span>
+    <span>示例数据为合成数据（MX / GB / MY / ID），生产环境接入 poi_correcton_v2 与点击日志产物</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

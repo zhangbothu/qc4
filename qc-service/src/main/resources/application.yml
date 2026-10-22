@@ -1,0 +1,32 @@
+server:
+  port: 18761
+  tomcat:
+    threads:
+      max: 200
+
+spring:
+  application:
+    name: qc3
+  jackson:
+    default-property-inclusion: non_null
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+qc:
+  # SAMPLE | FILES | ES  (see README)
+  source: SAMPLE
+  data-dir: data/artifacts
+  model-file: ""
+  country-whitelist: []
+  judge-enabled: true
+  deadline-micros: 40000
+  es:
+    url: http://localhost:9200
+    user: ""
+    password: ""
+    lexicon-index: poi_correcton_v2
+    countries: [484, 826, 458, 360]

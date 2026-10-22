@@ -1,0 +1,33 @@
+{
+  "version" : "perceptron-5ep",
+  "weights" : {
+    "CHANGE" : 0.08332,
+    "CHANNEL" : 1.5036,
+    "EDITS" : -0.06698,
+    "EDIT_RATIO" : -0.14172,
+    "LOG_FREQ" : 2.15719,
+    "OOV" : -0.94962,
+    "CITY_FREQ" : 0.42746,
+    "CITY_SPREAD" : 1.18594,
+    "EXPOSE" : 0.65455,
+    "ERRDICT_LOGP" : -0.04178,
+    "ERRDICT_HIT" : 0.5755,
+    "TONE_MATCH" : 0.27201,
+    "FIRST_CHAR" : -0.58594,
+    "LEN_DIFF" : -0.43264,
+    "SPLIT_MERGE" : -0.05192,
+    "PREFIX_CHANGE" : -0.09866,
+    "CTX_PMI" : 3.24492,
+    "CTX_SEEN" : 0.69013,
+    "CTX_UNKNOWN" : -0.4601
+  },
+  "calibration" : {
+    "aKeep" : 0.16052350998172804,
+    "aAlt" : 0.2554931040568139,
+    "bias" : -2.67371271599191
+  },
+  "thresholds" : {
+    "medium" : 0.5,
+    "high" : 0.85
+  }
+}
