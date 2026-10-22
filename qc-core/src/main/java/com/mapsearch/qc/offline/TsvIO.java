@@ -18,6 +18,7 @@ import java.util.List;
  *   pois     poiId  countryId  cityId  name  address  postcode(0|1)
  *   clicks   countryId  cityId  uid  query  googleName  googleAddress
  *   labeled  countryId  cityId  query  expected        (a trailing space in query = last word finished)
+ *   pairs    countryId  error  correction  count        (rule-mined pairs, e.g. 276 nyrnber nurnber 1)
  * </pre>
  */
 public final class TsvIO {
@@ -77,6 +78,18 @@ public final class TsvIO {
         List<LabeledQuery> out = new ArrayList<>();
         for (String[] f : rows(file)) {
             out.add(new LabeledQuery(Integer.parseInt(f[0]), Integer.parseInt(f[1]), f[2], f[3]));
+        }
+        return out;
+    }
+
+    /** Output of an existing rule-based pair miner: {@code countryId  error  correction  count}. */
+    public record MinedPair(int countryId, String error, String correction, int count) {
+    }
+
+    public static List<MinedPair> readPairs(Path file) throws IOException {
+        List<MinedPair> out = new ArrayList<>();
+        for (String[] f : rows(file)) {
+            out.add(new MinedPair(Integer.parseInt(f[0]), f[1], f[2], f.length > 3 ? Integer.parseInt(f[3]) : 1));
         }
         return out;
     }

@@ -56,6 +56,15 @@ public final class Artifacts {
 
     /** Full offline build from a POI corpus + click logs. */
     public static Built build(List<PoiRecord> pois, List<ClickRecord> clicks, LinearModel model, Consumer<String> log) {
+        return build(pois, clicks, List.of(), model, log);
+    }
+
+    /**
+     * {@code pairs} come from a pre-existing rule miner without user ids; each occurrence is counted as a distinct
+     * pseudo-user so a pair needs at least two occurrences to pass the same support filter as click pairs.
+     */
+    public static Built build(List<PoiRecord> pois, List<ClickRecord> clicks, List<TsvIO.MinedPair> pairs,
+                              LinearModel model, Consumer<String> log) {
         LexiconBuilder lb = new LexiconBuilder();
         BigramBuilder bb = new BigramBuilder();
         for (PoiRecord p : pois) {
@@ -72,6 +81,16 @@ public final class Artifacts {
             miner.add(c);
         }
         log.accept(miner.summary());
+        int pairNo = 0;
+        for (TsvIO.MinedPair p : pairs) {
+            pairNo++;
+            for (int k = 0; k < p.count(); k++) {
+                miner.addMinedPair(p.countryId(), "pair" + pairNo + "#" + k, p.error(), p.correction(), false);
+            }
+        }
+        if (!pairs.isEmpty()) {
+            log.accept("rule-mined pairs added: " + pairs.size());
+        }
         Map<Integer, List<TokenRecord>> lex = lb.build();
         Map<Integer, BigramModel> bigrams = bb.build(BIGRAM_MU, 1);
         ErrorDictionary ed = miner.errorDictionary(2, 2, 0.2);

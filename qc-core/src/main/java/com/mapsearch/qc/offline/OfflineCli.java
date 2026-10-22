@@ -35,12 +35,13 @@ import java.util.function.Consumer;
  * <pre>
  *   demo          sample world -> artifacts -> ablation study -> perceptron training -> evaluation
  *   gen-sample    write the synthetic pois / clicks / test TSVs (to try the file-based commands)
- *   build         pois.tsv + clicks.tsv [+ lexicon.tsv.gz from ES] -> artifacts dir
+ *   build         pois.tsv + clicks.tsv [+ pairs.tsv] [+ lexicon.tsv.gz from ES] -> artifacts dir
  *   train         artifacts dir + labeled.tsv -> model.json
  *   eval          artifacts dir + labeled.tsv -> metrics
  *   correct       artifacts dir + --country --query -> one correction with debug output
  *   es-lexicon    export poi_correcton_v2 (per country) to lexicon.tsv.gz
  *   es-pois       export poi_geo_abroad_v2 names (per country) to pois.tsv for the bigram build
+ *   bench         latency with each country's dictionary inflated to production size
  * </pre>
  */
 public final class OfflineCli {
@@ -52,7 +53,8 @@ public final class OfflineCli {
 
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
-            System.out.println("commands: demo | gen-sample | build | train | eval | correct | es-lexicon | es-pois");
+            System.out.println("commands: demo | gen-sample | build | train | eval | correct | es-lexicon | es-pois"
+                    + " | bench");
             return;
         }
         Map<String, String> o = options(args);
@@ -207,7 +209,8 @@ public final class OfflineCli {
         Path out = Path.of(o.getOrDefault("out", "data/artifacts"));
         List<PoiRecord> pois = TsvIO.readPois(Path.of(o.get("pois")));
         List<ClickRecord> clicks = o.containsKey("clicks") ? TsvIO.readClicks(Path.of(o.get("clicks"))) : List.of();
-        Artifacts.Built built = Artifacts.build(pois, clicks, Artifacts.bundledModel(), LOG);
+        List<TsvIO.MinedPair> pairs = o.containsKey("pairs") ? TsvIO.readPairs(Path.of(o.get("pairs"))) : List.of();
+        Artifacts.Built built = Artifacts.build(pois, clicks, pairs, Artifacts.bundledModel(), LOG);
         if (o.containsKey("lexicon")) {
             Map<Integer, List<TokenRecord>> esLex = LexiconIO.read(Path.of(o.get("lexicon")));
             built = new Artifacts.Built(built.resources(), esLex, built.bigrams(), built.miner());
